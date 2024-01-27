@@ -1,0 +1,16 @@
+{
+  "name": "hisse-senetleri-api",
+  "version": "1.0.0",
+  "description": "Hisse senetlerini sağlayan API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Batuhan Demir - https://github.com/batuhan-demir",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-html-parser": "^6.1.12"
+  }
+}
