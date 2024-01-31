@@ -7,22 +7,22 @@ const main = async (hisse) => {
             error: "Lütfen bir hisse senedi ismi girin."
         }
 
-    let istek = await fetch(`https://www.isyatirim.com.tr/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hisse=${hisse}`);
+    let bilgiReq = await fetch(`https://www.isyatirim.com.tr/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hisse=${hisse}`);
 
-    if (istek.status == 404 && await isimdenSembolBulma(hisse) == 404)
+    if (bilgiReq.status == 404 && await isimdenSembolBulma(hisse) == 404)
         return {
             error: "Böyle bir hisse senedi bulunamadı."
         }
 
-    if (istek.status == 404) {
+    if (bilgiReq.status == 404) {
         hisse = await isimdenSembolBulma(hisse)
-        istek = await fetch(`https://www.isyatirim.com.tr/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hisse=${hisse}`);
+        bilgiReq = await fetch(`https://www.isyatirim.com.tr/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hisse=${hisse}`);
     }
-    const sonuc = await istek.text();
+    const sonuc = await bilgiReq.text();
 
-    const fiyat = sonuc.split(`/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hisse=${hisse.toUpperCase()}`)[3].split("</td")[1].split('>')[2]
+    let fiyat = sonuc.split(`/tr-tr/analiz/hisse/Sayfalar/sirket-karti.aspx?hisse=${hisse.toUpperCase()}`)[3].split("</td")[1].split('>')[2]
 
-    const gunlukDegisim = sonuc.split("Getiriler")[1].split("ms-clear")[0].split('<td>TL</td>')[1].split('</td>')[0].trim().split('<td>')[1]
+    let gunlukDegisim = sonuc.split("Getiriler")[1].split("ms-clear")[0].split('<td>TL</td>')[1].split('</td>')[0].trim().split('<td>')[1]
 
     const ucAylikMin = sonuc.split("Dönemsel Hareketler")[1].split("ms-clear")[0].split('(TL)</td>')[1].split('</td>')[0].trim().split('<td>')[1]
 
@@ -40,6 +40,15 @@ const main = async (hisse) => {
 
     const faks = sonuc.split("Faks</th>")[1].split('>')[1].split('<')[0].trim()
 
+    let fiyatReq = await fetch(`https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/OneEndeks?endeks=${hisse}.E.BIST`)
+
+    const fiyatJSON = await fiyatReq.json();
+
+    if (fiyatJSON[0]) {
+        fiyat = fiyatJSON[0].last
+        gunlukDegisim = fiyatJSON[0].dailyChange
+        gunlukYuzdeDegisim = fiyatJSON[0].dailyChangePercentage
+    }
     return {
         unvan,
         kurulus,
@@ -50,6 +59,7 @@ const main = async (hisse) => {
 
         fiyat,
         gunlukDegisim,
+        gunlukYuzdeDegisim,
         ucAylikMin,
         ucAylikMax
     }
