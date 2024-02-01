@@ -40,7 +40,7 @@ const main = async (hisse) => {
 
     const faks = sonuc.split("Faks</th>")[1].split('>')[1].split('<')[0].trim()
 
-    let fiyatReq = await fetch(`https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/OneEndeks?endeks=${hisse}.E.BIST`)
+    let fiyatReq = await fetch(`https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/OneEndeks?endeks=${hisse.toUpperCase()}.E.BIST`)
 
     const fiyatJSON = await fiyatReq.json();
 
